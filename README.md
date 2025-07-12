@@ -14,7 +14,7 @@
   <a href="https://github.com/Ryuzii/TuneLink/stargazers"><img src="https://img.shields.io/github/stars/Ryuzii/TuneLink.svg?style=for-the-badge"/></a>
   <a href="https://github.com/Ryuzii/TuneLink/issues"><img src="https://img.shields.io/github/issues/Ryuzii/TuneLink.svg?style=for-the-badge"/></a>
   <a href="https://discord.gg/xhTVzbS5NU"><img src="https://img.shields.io/discord/1056011738950156359?label=discord&logo=discord&style=for-the-badge&color=5865F2"/></a>
-  <a href="https://ko-fi.com/enourdev" target="_blank"><img src="https://ko-fi.com/img/githubbutton_sm.svg"/></a>
+  <a href="https://ko-fi.com/ryuzii" target="_blank"><img src="https://ko-fi.com/img/githubbutton_sm.svg"/></a>
 </p>
 
 ---
