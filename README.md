@@ -243,7 +243,7 @@ Contributions are welcome! Please open issues or pull requests for bugs, feature
 
 # 💬 Support & Community
 - [GitHub Issues](https://github.com/Ryuzii/TuneLink/issues)
-- [Discord Support Server](https://discord.gg/xhTVzbS5NU)
+- [Discord Support Server](https://discord.gg/4Dmfd6yE7F)
 
 ---
 
