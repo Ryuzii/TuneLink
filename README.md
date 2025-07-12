@@ -85,48 +85,102 @@ npm install tunelink
 
 # 🚀 Usage
 
-## Basic Setup
+## Full Example (Discord.js v14+)
 ```js
+const { Client, GatewayIntentBits } = require('discord.js');
 const { TuneLink } = require('tunelink');
-const client = /* your Discord.js or Eris client */;
 
-const nodes = [
+const LAVALINK_NODES = [
   {
-    name: 'MainNode',
-    host: 'localhost',
-    port: 2333,
-    auth: 'youshallnotpass',
-    secure: false,
+    host: 'lavalink.devxcode.in',
+    port: 443,
+    password: 'DevamOP',
+    name: 'Local',
+    secure: true
   },
 ];
 
-const tuneLink = new TuneLink(client, nodes, {
-  send: (packet) => client.ws.send(packet),
-  autoResume: { enabled: true, key: './playerState.json' },
-  betterAutoPlay: true,
-  dynamicNode: true,
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+
+const music = new TuneLink(client, LAVALINK_NODES, {
+  send: (payload) => {
+    const guild = client.guilds.cache.get(payload.d.guild_id);
+    if (guild) guild.shard.send(payload);
+  },
+  restVersion: 'v4',
   defaultSource: 'ytm',
+  autoPause: { enabled: true },
+  autoResume: { enabled: true, key: 'playerState.json' },
+  betterAutoPlay: { enabled: true },
+  dynamicNode: { enabled: true },
 });
 
-tuneLink.init(client.user.id);
-```
-
-## Real-World Command Example
-```js
-// Play a track in a Discord command
-const player = tuneLink.createConnection({
-  guildId: interaction.guildId,
-  textChannel: interaction.channelId,
-  voiceChannel: userVoiceChannelId,
+client.once('ready', () => {
+  console.log(`Logged in as ${client.user.tag}`);
+  music.init(client.user.id);
 });
-const result = await tuneLink.resolve({ query: 'never gonna give you up', requester: interaction.user });
-if (result.loadType === 'track' && result.tracks.length) {
-  player.queue.push(result.tracks[0]);
-  player.play();
-  interaction.reply('Now playing!');
-} else {
-  interaction.reply('No results found.');
-}
+
+// !play command
+client.on('messageCreate', async (message) => {
+  if (message.author.bot || !message.guild) return;
+  if (!message.content.startsWith('!play ')) return;
+
+  const query = message.content.slice('!play '.length).trim();
+  if (!query) return message.reply('Please provide a search query or URL!');
+
+  const member = message.member;
+  const voiceChannel = member.voice?.channel;
+  if (!voiceChannel) return message.reply('You must be in a voice channel!');
+
+  let player = music.get(message.guildId);
+  if (!player) {
+    player = music.createConnection({
+      guildId: message.guildId,
+      voiceChannel: voiceChannel.id,
+      textChannel: message.channelId,
+      deaf: true
+    });
+  }
+
+  let result;
+  try {
+    result = await music.resolve({ query, requester: message.author });
+  } catch (err) {
+    return message.reply(`❌ Search failed: ${err.message}`);
+  }
+
+  const { loadType, tracks, playlistInfo } = result;
+
+  if (loadType === 'playlist' && playlistInfo) {
+    player.queue.addPlaylist(tracks, playlistInfo);
+    message.channel.send(`📀 Playlist: **${playlistInfo.name}** with **${tracks.length}** tracks`);
+    if (!player.playing && !player.paused) return player.play();
+  } else if (loadType === 'search' || loadType === 'track') {
+    const track = tracks.shift();
+    track.info.requester = message.author;
+    player.queue.add(track);
+    message.channel.send(`🎵 Added: **${track.info.title}**`);
+    if (!player.playing && !player.paused) return player.play();
+  } else {
+    return message.channel.send('❌ No results found.');
+  }
+});
+
+// Forward raw voice events to TuneLink for voice connection support
+client.on('raw', (packet) => {
+  if (packet.t === 'VOICE_STATE_UPDATE' || packet.t === 'VOICE_SERVER_UPDATE') {
+    music.updateVoiceState(packet);
+  }
+});
+
+client.login(process.env.DISCORD_TOKEN);
 ```
 
 ---
@@ -182,7 +236,7 @@ Contributions are welcome! Please open issues or pull requests for bugs, feature
 </a>
 
 - <b>[Ryuzii](https://github.com/Ryuzii)</b> (Author & Maintainer)
-- <b>[SoulDevs](https://github.com/SoulDevs)</b> (Contributor)
+- <img src="https://avatars.githubusercontent.com/u/10298206?v=4" width="32" height="32" style="border-radius:50%;vertical-align:middle;"/> <b>[SoulDevs](https://github.com/SoulDevs)</b> (Contributor)
 
 ---
 
