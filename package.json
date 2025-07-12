@@ -1,0 +1,52 @@
+{
+  "name": "tunelink",
+  "version": "0.1.5-beta",
+  "description": "A high-performance, modular, and easy-to-use Lavalink client for Node.js, featuring advanced player and queue management, robust auto-resume, and dynamic node failover.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "author": "Ryuzii <https://github.com/Ryuzii>",
+  "contributors": [
+    {
+      "name": "Ryuzii",
+      "url": "https://github.com/Ryuzii"
+    },
+    {
+      "name": "SoulDevs",
+      "url": "https://github.com/SoulDevs"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ryuzii/TuneLink.git"
+  },
+  "homepage": "https://github.com/Ryuzii/TuneLink#readme",
+  "bugs": {
+    "url": "https://github.com/Ryuzii/TuneLink/issues"
+  },
+  "keywords": [
+    "lavalink",
+    "music",
+    "discord",
+    "nodejs",
+    "audio",
+    "queue",
+    "autoresume",
+    "autopause",
+    "autoplay",
+    "dynamicnode",
+    "tunelink"
+  ],
+  "dependencies": {
+    "axios": "^1.6.0",
+    "discord.js": "^14.21.0",
+    "jsdom": "^23.0.0",
+    "lrclib-api": "^2.0.0",
+    "tseep": "^1.0.0",
+    "undici": "^6.0.0",
+    "ws": "^8.0.0"
+  }
+}
