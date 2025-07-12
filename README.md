@@ -1,3 +1,5 @@
+# TuneLink
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=TuneLink&fontSize=80&fontAlignY=35&animation=twinkling&fontColor=gradient"/>
 </p>
@@ -232,9 +234,12 @@ Contributions are welcome! Please open issues or pull requests for bugs, feature
 <a href="https://github.com/Ryuzii/TuneLink/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=Ryuzii/TuneLink" />
 </a>
+<a href="https://github.com/Ryuzii/TuneLink/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=Ryuzii/TuneLink" />
+</a>
 
 - <b>[Ryuzii](https://github.com/Ryuzii)</b> (Author & Maintainer)
-- <img src="https://avatars.githubusercontent.com/u/10298206?v=4" width="32" height="32" style="border-radius:50%;vertical-align:middle;"/> <b>[SoulDevs](https://github.com/SoulDevs)</b> (Contributor)
+- <b>[SoulDevs](https://github.com/SoulDevs)</b> (Contributor)
 
 ---
 
