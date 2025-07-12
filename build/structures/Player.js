@@ -213,7 +213,7 @@ class Player extends EventEmitter {
             throw error;
         }
     }
-    async play() {
+    async play(position = 0) {
         try {
             if (!this.connected) {
                 // If auto-resume is in progress, skip error and just return
@@ -229,13 +229,14 @@ class Player extends EventEmitter {
             this.current = await this.current.resolve(this.resolveTrack);
         }
         this.playing = true;
-        this.position = 0;
-            this.timestamp = Date.now();
+        this.position = position;
+        this.timestamp = Date.now();
         const { track } = this.current;
-            this.queueUpdate({
-                track: {
-                    encoded: track,
+        this.queueUpdate({
+            track: {
+                encoded: track,
             },
+            position, // Pass position to Lavalink if supported
         });
         return this;
         } catch (err) {
@@ -506,7 +507,8 @@ class Player extends EventEmitter {
         if (this.options.players && this.options.players.has(this.guildId)) {
             this.options.players.delete(this.guildId);
         }
-        this.emitter && this.emitter.emit && this.emitter.emit("playerDestroy", this);
+        const nodeName = this.node ? this.node.name : 'unknown';
+        this.emitter && this.emitter.emit && this.emitter.emit("playerDestroy", this, nodeName);
     }
     async handleEvent(payload) {
         switch (payload.type) {

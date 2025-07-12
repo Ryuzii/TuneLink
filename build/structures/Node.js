@@ -4,18 +4,20 @@
 const WebSocket = require("ws");
 const Rest = require("./Rest");
 const { Track } = require("./Track");
+const { EventEmitter } = require('tseep');
 
 /**
  * Lavalink Node manager for TuneLink
  * Handles connection, reconnection, failover, autoResume, and plugin support
  */
-class Node {
+class Node extends EventEmitter {
   /**
    * @param {object} node - Node options (host, port, password, secure, etc.)
    * @param {object} options - Additional options (restVersion, resumeKey, etc.)
    * @param {object} [emitter] - Optional event emitter or logger for debug events
    */
   constructor(node, options = {}, emitter) {
+    super();
     this.emitter = emitter;
     this.options = options;
     this.name = node.name || node.host;
@@ -268,6 +270,7 @@ class Node {
       this.reconnect();
     } else {
       this.emitter && this.emitter.emit('debug', this.name, `Connection closed, max reconnection attempts reached`);
+      this.emit('disconnect');
     }
   }
 

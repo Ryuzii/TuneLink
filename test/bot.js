@@ -8,13 +8,13 @@ const { TuneLink } = require('../build');
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN || 'TOKEN';
 const LAVALINK_NODES = [
-  {
-    host: 'lavalink.devxcode.in',
-    port: 443,
-    password: 'DevamOP',
-    name: 'Local',
-    secure: true
-  },
+    {
+        name: "test2",
+        password: "DevamOP",
+        host: "lavalink.devxcode.in",
+        port: 443,
+        secure: true,
+    },
 ];
 
 const client = new Client({
@@ -73,7 +73,21 @@ client.once('ready', () => {
 
 music.on('debug', (...args) => console.log('[TuneLink]', ...args.filter(x => x !== undefined)));
 music.on('playerCreate', player => console.log(`[TuneLink] Player created for guild ${player.guildId}`));
-music.on('playerDestroy', player => console.log(`[TuneLink] Player destroyed for guild ${player.guildId}`));
+music.on('playerDestroy', (player, nodeName) => console.log(`[TuneLink] Player ${player.guildId} destroyed on node ${nodeName}`));
+
+// Play event listeners
+music.on('trackStart', (player, track) => {
+  const channel = client.channels.cache.get(player.textChannel);
+  if (channel) {
+    channel.send(`▶️ Now playing: **${track.info.title}**`);
+  }
+});
+music.on('queueEnd', (player) => {
+  const channel = client.channels.cache.get(player.textChannel);
+  if (channel) {
+    channel.send('✅ Queue has ended. Add more songs with `!play <song>`!');
+  }
+});
 
 // Example: Play command (prefix !play)
 client.on('messageCreate', async (message) => {

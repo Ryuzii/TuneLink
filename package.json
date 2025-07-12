@@ -1,6 +1,6 @@
 {
   "name": "tunelink",
-  "version": "0.1.5-beta",
+  "version": "0.1.7-rc.1",
   "description": "A high-performance, modular, and easy-to-use Lavalink client for Node.js, featuring advanced player and queue management, robust auto-resume, and dynamic node failover.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

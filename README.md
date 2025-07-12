@@ -2,11 +2,11 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=TuneLink&fontSize=80&fontAlignY=35&animation=twinkling&fontColor=gradient"/>
 </p>
 
-<p align="center">
+<p align="center"> 
   <b>High-performance, modular, and robust Lavalink client for Node.js.<br>Advanced player & queue, seamless auto-resume, dynamic node failover, and more.</b>
 </p>
 
-<p align="center">
+<p align="center"> 
   <a href="https://www.npmjs.com/package/tunelink"><img src="https://img.shields.io/npm/v/tunelink?style=for-the-badge&color=cb3837&logo=npm"/></a>
   <a href="https://github.com/Ryuzii/TuneLink"><img src="https://img.shields.io/github/package-json/v/Ryuzii/TuneLink?style=for-the-badge"/></a>
   <a href="https://github.com/Ryuzii/TuneLink/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Ryuzii/TuneLink.svg?style=for-the-badge"/></a>

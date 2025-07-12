@@ -203,8 +203,71 @@ class TuneLink extends EventEmitter {
     const node = new Node(options, this.options, this);
     this.nodeMap.set(options.name || options.host, node);
     node.connect();
+    // Listen for node disconnects to trigger failover
+    node.on('disconnect', () => this._handleNodeDisconnect(node));
     this.emit("nodeCreate", node);
     return node;
+  }
+
+  /**
+   * Handles node disconnect and moves players to backup node if available
+   * @param {Node} node
+   */
+  _handleNodeDisconnect(node) {
+    this.emit('debug', `[TuneLink] Node ${node.name} disconnected, attempting failover...`);
+    for (const player of this.players.values()) {
+      if (player.node === node) {
+        // Find a backup node that is connected and not the failed node
+        const backupNode = this.leastUsedNodes.find(n => n !== node && n.connected);
+        if (backupNode) {
+          this.emit('debug', `[TuneLink] Moving player ${player.guildId} to backup node ${backupNode.name}`);
+          // Save player state
+          const state = player.toJSON ? player.toJSON() : {};
+          const guildId = player.guildId || state.guildId;
+          const textChannel = player.textChannel || state.textChannel;
+          const voiceChannel = player.voiceChannel || state.voiceChannel;
+          const deaf = player.deaf || state.deaf;
+
+          if (!guildId || !voiceChannel || !textChannel) {
+            this.emit('debug', `[TuneLink] Failover aborted for player ${player.guildId}: missing guildId, voiceChannel, or textChannel`);
+            continue;
+          }
+
+          const position = player.position || (state.current && state.current.position) || 0;
+          // Destroy old player
+          player.destroy();
+          // Create new player on backup node
+          const newPlayer = this.createPlayer(backupNode, {
+            ...state,
+            guildId,
+            textChannel,
+            voiceChannel,
+            deaf,
+          });
+          // Attempt to reconnect and resume playback
+          newPlayer.connect({
+            guildId,
+            textChannel,
+            voiceChannel,
+            deaf,
+          });
+          if (state.current) {
+            const waitForConnectionAndPlay = (player, position, retries = 20) => {
+              if (player.connected) {
+                player.play(position);
+              } else if (retries > 0) {
+                setTimeout(() => waitForConnectionAndPlay(player, position, retries - 1), 250);
+              } else {
+                this.emit('debug', `[TuneLink] Failover: Player did not connect in time, could not resume playback.`);
+              }
+            };
+            waitForConnectionAndPlay(newPlayer, position);
+          }
+        } else {
+          this.emit('debug', `[TuneLink] No backup node available for player ${player.guildId}`);
+        }
+      }
+    }
   }
 
   destroyNode(identifier) {
@@ -292,9 +355,10 @@ class TuneLink extends EventEmitter {
   destroyPlayer(guildId) {
     const player = this.players.get(guildId);
     if (!player) return;
+    const nodeName = player.node ? player.node.name : 'unknown';
     player.destroy();
     this.players.delete(guildId);
-    this.emit("playerDestroy", player);
+    this.emit("playerDestroy", player, nodeName);
   }
 
   removeConnection(guildId) {
