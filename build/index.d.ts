@@ -127,6 +127,14 @@ export class TuneLink extends EventEmitter {
   savePlayersState(filePath: string): Promise<any>;
   loadPlayersState(filePath: string): Promise<number>;
   destroy(): void;
+  /**
+   * Emitted when a track is auto-resumed after failover or reconnect.
+   * @event
+   * @param player The Player instance
+   * @param track The Track being resumed
+   * @param payload Object with position and reason
+   */
+  on(event: 'autoResume', listener: (player: Player, track: Track, payload: { position: number, reason: string }) => void): this;
 }
 
 export class Node {
@@ -208,6 +216,14 @@ export class Player extends EventEmitter {
   toJSON(): any;
   // static fromJSON
   static fromJSON(node: Node, data: any, emitter?: any, send?: Function, resolve?: Function): Player;
+  /**
+   * Emitted when a track is auto-resumed after failover or reconnect.
+   * @event
+   * @param player The Player instance
+   * @param track The Track being resumed
+   * @param payload Object with position and reason
+   */
+  on(event: 'autoResume', listener: (player: Player, track: Track, payload: { position: number, reason: string }) => void): this;
 }
 
 export class Track {

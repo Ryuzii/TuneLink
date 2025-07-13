@@ -50,7 +50,7 @@
 - ⚡ **High Performance:** Minimal RAM/CPU usage, fast event-driven core.
 - 🧩 **Modular:** Clean separation of player, queue, node, REST, and connection logic.
 - 🎶 **Advanced Player & Queue:** Powerful queue, metadata, search, and playback control.
-- 🔄 **Robust Auto-Resume:** Seamless player state recovery after restarts/disconnects.
+- 🔄 **Robust Auto-Resume:** Seamless player state recovery after restarts/disconnects, with a dedicated `autoResume` event for precise event handling (no duplicate `trackStart`).
 - 🔀 **Dynamic Node Failover:** Automatic node selection and failover for reliability.
 - 🎵 **Multi-Source Support:** YouTube, SoundCloud, Spotify, and more (via Lavalink plugins).
 - 🛠️ **Easy API:** Simple, expressive API for rapid bot development.
@@ -179,6 +179,17 @@ client.on('raw', (packet) => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+```
+
+## Handling Auto-Resume Events
+
+TuneLink emits a dedicated `autoResume` event when playback resumes after a node failover or reconnect. This allows you to distinguish between normal track starts and auto-resume:
+
+```js
+music.on('autoResume', (player, track, payload) => {
+  // Handle auto-resume (e.g., notify users, update UI, etc.)
+  console.log(`Auto-resumed: ${track.info.title} at ${Math.floor((payload.position || 0)/1000)}s`);
+});
 ```
 
 ---

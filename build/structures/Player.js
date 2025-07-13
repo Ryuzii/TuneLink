@@ -16,6 +16,14 @@ try {
     console.warn('lrclib-api not installed. Lyrics functionality will be disabled.');
 }
 
+/**
+ * Player class for handling playback, autoPause, autoResume, and VC logic
+ *
+ * Events:
+ *   - 'trackStart': (player, track, payload) => void
+ *   - 'autoResume': (player, track, payload) => void // Emitted only when playback resumes due to auto-resume (failover/reconnect)
+ *   - ...
+ */
 class Player extends EventEmitter {
     /**
      * @param {object} node - The Lavalink node
@@ -260,6 +268,8 @@ class Player extends EventEmitter {
             data.filters = filterPayload;
         }
         }
+        // Set flag to indicate next TrackStartEvent is from autoResume
+        this._pendingAutoResume = true;
         await this.node.rest.updatePlayer({
         guildId: this.guildId,
         data,
@@ -513,7 +523,12 @@ class Player extends EventEmitter {
     async handleEvent(payload) {
         switch (payload.type) {
             case "TrackStartEvent":
-                this.trackStart(this, this.current, payload);
+                if (this._pendingAutoResume) {
+                    this._pendingAutoResume = false;
+                    this.emitter && this.emitter.emit && this.emitter.emit("autoResume", this, this.current, { position: this.position, reason: "AUTO_RESUME" });
+                } else {
+                    this.trackStart(this, this.current, payload);
+                }
                 break;
             case "TrackEndEvent":
                 this.trackEnd(this, this.current, payload);
